@@ -1,0 +1,29 @@
+# -*- mode: dockerfile -*-
+#
+#   Build an image for comparing this implementation of pixelmatch against the JS one.
+FROM golang:1.14 AS builder
+
+WORKDIR /build
+
+COPY . ./
+
+RUN go build -o pixelmatch ./cmd/...
+
+FROM node AS deps
+
+RUN apt-get update && apt-get install -y xxd
+
+FROM deps
+
+WORKDIR /compare
+
+RUN mkdir pixelmatch-go
+COPY --from=builder /build/pixelmatch ./pixelmatch-go/pixelmatch
+
+RUN git clone --depth 1 https://github.com/mapbox/pixelmatch pixelmatch-js
+RUN cd pixelmatch-js && yarn install
+
+COPY ./compare_test.sh .
+RUN ls -R
+
+ENTRYPOINT ["./compare_test.sh"]
