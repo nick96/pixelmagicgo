@@ -24,6 +24,5 @@ RUN git clone --depth 1 https://github.com/mapbox/pixelmatch pixelmatch-js
 RUN cd pixelmatch-js && yarn install
 
 COPY ./compare_test.sh .
-RUN ls -R
 
 ENTRYPOINT ["./compare_test.sh"]
