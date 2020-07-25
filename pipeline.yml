@@ -1,0 +1,23 @@
+resources:
+  - name: src
+    type: git
+    source:
+      uri: https://github.com/nick96/pixelmagicgo
+  - name: comparison-test-docker
+    type: docker-image
+    source:
+      email: nicholas.spain96@gmail.com
+      username: ((docker_hub_username))
+      password: ((docker_hub_password))
+      repository: nick96/pixelmatch-comparison-test
+
+jobs:
+  - name: publish-comparison-test
+    plan:
+      - get: src
+        trigger: true
+      - put: comparison-test-docker
+        params:
+          build: src
+          dockerfile: src/docker/Dockerfile.compare
+          tag_as_latest: true
